@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<!-- saved from url=(0067)file:///C:/Users/DAlcazar/Downloads/kent_parts_slip_live%20(4).html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kent Automotive — Parts Order Slip</title>
+<link href="./Kent Automotive — Parts Order Slip_files/css2" rel="stylesheet">
+<style>
+:root {
+  --orange:#f97316;--orange2:#ea6a06;--ink:#111111;--ink2:#333333;
+  --muted:#777777;--rule:#e2e2de;--bg:#f0efeb;--surface:#fafaf7;
+  --white:#ffffff;--green:#15803d;--blue:#1d4ed8;--yellow:#fffbeb;
+  --mono:'DM Mono',monospace;--display:'Syne',sans-serif;--body:'DM Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);font-family:var(--body);color:var(--ink);min-height:100vh;}
+
+/* ── Toolbar ── */
+.toolbar{background:var(--ink);padding:0 28px;height:52px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:300;}
+.t-logo{width:28px;height:28px;background:var(--orange);border-radius:4px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:14px;color:white;flex-shrink:0;}
+.t-brand{font-family:var(--display);font-weight:700;font-size:14px;color:var(--orange);letter-spacing:.04em;}
+.t-sep{color:#333;font-size:16px;}
+.t-title{font-family:var(--body);font-size:12px;color:#666;}
+.t-actions{margin-left:auto;display:flex;gap:8px;align-items:center;}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#555;transition:background .3s;flex-shrink:0;}
+.status-dot.ok{background:#22c55e;}
+.status-dot.err{background:#ef4444;}
+.status-dot.loading{background:#f97316;animation:pulse 1s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.status-text{font-size:11px;color:#555;font-family:var(--body);}
+.btn{height:32px;padding:0 16px;border-radius:5px;font-family:var(--display);font-weight:600;font-size:11px;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;border:none;transition:all .15s;display:flex;align-items:center;gap:6px;}
+.btn-ghost{background:transparent;border:1px solid #333;color:#777;}
+.btn-ghost:hover{border-color:#666;color:#bbb;}
+.btn-primary{background:var(--orange);color:white;}
+.btn-primary:hover{background:var(--orange2);}
+
+/* ── Setup banner ── */
+.setup-banner{background:#1c1c1c;border-bottom:1px solid #2a2a2a;padding:10px 28px;display:flex;align-items:center;gap:12px;}
+.setup-banner.hidden{display:none;}
+.setup-text{font-size:12px;color:#888;}
+.setup-text a{color:var(--orange);text-decoration:none;}
+.setup-text a:hover{text-decoration:underline;}
+.sheet-input{flex:1;max-width:480px;height:30px;background:#111;border:1px solid #333;border-radius:4px;padding:0 10px;font-family:var(--mono);font-size:11px;color:#ccc;outline:none;}
+.sheet-input:focus{border-color:var(--orange);}
+.btn-sm{height:30px;padding:0 12px;border-radius:4px;font-family:var(--display);font-weight:600;font-size:10px;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;border:none;background:var(--orange);color:white;}
+
+/* ── Controls ── */
+.controls{background:#e8e7e2;border-bottom:1px solid var(--rule);padding:14px 28px;display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;}
+.ctrl{display:flex;flex-direction:column;gap:4px;}
+.ctrl-label{font-family:var(--display);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+.ctrl input,.ctrl select{height:34px;background:var(--white);border:1px solid var(--rule);border-radius:5px;padding:0 10px;font-family:var(--mono);font-size:12px;color:var(--ink);outline:none;transition:border-color .15s;}
+.ctrl input:focus,.ctrl select:focus{border-color:var(--orange);}
+.ctrl input::placeholder{color:#bbb;}
+
+/* ── Add bar ── */
+.add-bar{background:#e8e7e2;border-bottom:2px solid #d4d3ce;padding:12px 28px;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;}
+.search-wrap{position:relative;}
+#partSearch{height:34px;width:240px;background:var(--white);border:2px solid var(--orange);border-radius:5px;padding:0 10px;font-family:var(--mono);font-size:12px;color:var(--ink);outline:none;}
+#partSearch:disabled{opacity:.5;cursor:not-allowed;}
+.dropdown{position:absolute;top:calc(100% + 4px);left:0;width:460px;background:var(--white);border:1px solid var(--rule);border-radius:6px;box-shadow:0 10px 32px rgba(0,0,0,.13);max-height:260px;overflow-y:auto;z-index:400;}
+.drop-item{padding:8px 12px;cursor:pointer;display:flex;align-items:center;gap:10px;border-bottom:1px solid #f4f4f0;transition:background .08s;}
+.drop-item:last-child{border-bottom:none;}
+.drop-item:hover,.drop-item.active{background:#fff8f3;}
+.di-num{font-family:var(--mono);font-size:11px;color:var(--ink);width:100px;flex-shrink:0;}
+.di-desc{font-size:11px;color:#555;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.di-price{font-family:var(--mono);font-size:11px;color:var(--green);flex-shrink:0;}
+.di-make{font-family:var(--display);font-size:9px;font-weight:700;color:#aaa;flex-shrink:0;width:48px;}
+#qtyAdd{height:34px;width:60px;background:var(--white);border:1px solid var(--rule);border-radius:5px;padding:0 8px;text-align:center;font-family:var(--mono);font-size:13px;color:var(--ink);outline:none;}
+.add-hint{font-family:var(--display);font-size:10px;color:#999;align-self:center;letter-spacing:.04em;}
+
+/* ── Loading overlay ── */
+.loading-bar{height:3px;background:var(--rule);overflow:hidden;}
+.loading-bar-inner{height:100%;background:var(--orange);width:0;transition:width .3s;}
+
+/* ── Page wrap ── */
+.page-wrap{padding:28px;display:flex;flex-direction:column;align-items:center;}
+
+/* ── Slip ── */
+.slip{width:700px;background:var(--white);border:1.5px solid #ccc;border-radius:4px;box-shadow:0 6px 28px rgba(0,0,0,.1);overflow:hidden;}
+.slip-head{background:var(--ink);padding:14px 20px;display:flex;align-items:center;gap:14px;}
+.slip-logo{width:40px;height:40px;background:var(--orange);border-radius:4px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:20px;color:white;flex-shrink:0;}
+.slip-brand{font-family:var(--display);font-weight:800;font-size:20px;color:white;letter-spacing:.04em;line-height:1.1;}
+.slip-brand-sub{font-family:var(--body);font-size:10px;color:#555;letter-spacing:.08em;text-transform:uppercase;margin-top:2px;}
+.slip-title-block{margin-left:auto;text-align:right;}
+.slip-title{font-family:var(--display);font-weight:700;font-size:13px;color:var(--orange);letter-spacing:.1em;text-transform:uppercase;}
+.slip-ref{font-family:var(--mono);font-size:10px;color:#444;margin-top:4px;}
+.orange-bar{height:4px;background:var(--orange);}
+.info-grid{display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--rule);}
+.info-cell{padding:9px 16px;border-right:1px solid var(--rule);}
+.info-cell:last-child{border-right:none;}
+.info-label{font-family:var(--display);font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.info-value{font-family:var(--mono);font-size:13px;color:var(--ink);min-height:20px;font-weight:500;}
+.vehicle-grid{display:grid;grid-template-columns:2fr 1fr;border-bottom:2px solid var(--ink);background:var(--surface);}
+.parts-table{width:100%;border-collapse:collapse;}
+.parts-table thead th{padding:7px 10px;font-family:var(--display);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:#f5f5f2;border-bottom:1px solid var(--rule);border-right:1px solid var(--rule);}
+.parts-table thead th:last-child{border-right:none;}
+.parts-table thead th.r{text-align:right;}
+.parts-table thead th.c{text-align:center;}
+.parts-table tbody tr{border-bottom:1px solid var(--rule);}
+.parts-table tbody td{padding:0;border-right:1px solid var(--rule);vertical-align:middle;}
+.parts-table tbody td:last-child{border-right:none;}
+.td-inner{padding:7px 10px;}
+.row-num{font-family:var(--mono);font-size:10px;color:#ccc;text-align:center;width:28px;}
+.part-num-cell{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--ink);}
+.desc-cell{font-size:11px;color:#666;font-style:italic;}
+.make-badge{display:inline-block;padding:1px 6px;border-radius:3px;font-family:var(--display);font-size:9px;font-weight:700;border:1px solid currentColor;letter-spacing:.04em;}
+.unit-price-cell{font-family:var(--mono);font-size:12px;color:var(--blue);text-align:right;}
+.ext-price-cell{font-family:var(--mono);font-size:12px;color:var(--green);font-weight:600;text-align:right;background:#fafaf7;}
+.remove-btn{width:22px;height:22px;border-radius:50%;background:transparent;border:1px solid #e0e0dc;color:#bbb;font-size:13px;cursor:pointer;display:grid;place-items:center;transition:all .12s;line-height:1;}
+.remove-btn:hover{background:#fee2e2;border-color:#fca5a5;color:#dc2626;}
+.empty-dash{display:inline-block;border-bottom:1px dashed #e4e4e0;}
+.total-row td{background:#f4f4f1!important;border-top:2px solid var(--ink)!important;}
+.total-label{font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);text-align:right;padding-right:10px;}
+.total-amount{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--ink);text-align:right;padding-right:10px;}
+.sig-section{display:grid;grid-template-columns:1fr 1fr;border-top:2px solid var(--ink);background:var(--surface);}
+.sig-cell{padding:12px 16px;border-right:1px solid var(--rule);}
+.sig-cell:last-child{border-right:none;}
+.sig-label{font-family:var(--display);font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:18px;}
+.sig-line{border-bottom:1px solid var(--ink);height:28px;margin-bottom:5px;}
+.sig-sub{font-size:9px;color:var(--muted);font-family:var(--display);text-transform:uppercase;letter-spacing:.08em;}
+.slip-foot{background:var(--ink);padding:7px 20px;display:flex;justify-content:space-between;align-items:center;}
+.foot-l{font-family:var(--display);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#3a3a3a;}
+.foot-r{font-family:var(--mono);font-size:9px;color:#333;}
+.qty-input{width:46px;height:28px;text-align:center;border:1px solid #e2e2de;border-radius:3px;font-family:var(--mono);font-size:12px;background:var(--yellow);outline:none;transition:border-color .12s;}
+.qty-input:focus{border-color:var(--orange);}
+
+/* ── Parts count badge ── */
+.parts-count{font-size:11px;color:#555;font-family:var(--body);}
+.parts-count span{color:var(--orange);font-weight:600;}
+
+@media print{
+  .toolbar,.controls,.add-bar,.setup-banner,.loading-bar{display:none!important;}
+  body{background:white;}
+  .page-wrap{padding:0;}
+  .slip{width:100%;border:none;box-shadow:none;border-radius:0;}
+  .remove-btn,.no-print{display:none!important;}
+  .qty-input{border:none;background:transparent;}
+  @page{margin:0.45in;size:letter;}
+}
+</style>
+</head>
+<body>
+
+<!-- Toolbar -->
+<div class="toolbar">
+  <div class="t-logo">K</div>
+  <span class="t-brand">Kent Automotive</span>
+  <span class="t-sep">·</span>
+  <span class="t-title">Parts Order Slip</span>
+  <div class="t-actions">
+    <div class="status-dot err" id="statusDot"></div>
+    <button class="btn btn-ghost" onclick="reloadParts()" title="Reload parts from sheet">↺ Reload</button>
+    <button class="btn btn-ghost" onclick="clearAll()">Clear</button>
+    <button class="btn btn-primary" onclick="window.print()">⎙ Print</button>
+  </div>
+</div>
+
+<!-- Loading bar -->
+<div class="loading-bar"><div class="loading-bar-inner" id="loadBar" style="width: 0%;"></div></div>
+
+<!-- Sheet URL bar — always visible -->
+<div style="background:#1a1a1a;border-bottom:2px solid var(--orange);padding:10px 28px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+  <span style="font-family:var(--display);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--orange);white-space:nowrap;">📋 Google Sheet URL</span>
+  <input type="text" id="sheetUrl" style="flex: 1 1 0%; min-width: 280px; height: 32px; background: rgb(17, 17, 17); border: 1px solid rgb(68, 68, 68); border-radius: 4px; padding: 0px 10px; font-family: var(--mono); font-size: 11px; color: rgb(221, 221, 221); outline: none;" placeholder="Paste your published CSV link here — e.g. https://docs.google.com/spreadsheets/d/.../pub?output=csv" onfocus="this.style.borderColor=&#39;var(--orange)&#39;" onblur="this.style.borderColor=&#39;#444&#39;">
+  <button onclick="saveAndLoad()" style="height:32px;padding:0 16px;background:var(--orange);border:none;border-radius:4px;font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:white;cursor:pointer;white-space:nowrap;">
+    Load Sheet
+  </button>
+  <button onclick="showInstructions()" style="height:32px;padding:0 12px;background:transparent;border:1px solid #444;border-radius:4px;font-family:var(--display);font-weight:600;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#777;cursor:pointer;white-space:nowrap;">
+    How to set up →
+  </button>
+  <span id="statusText" style="font-size:11px;color:#555;white-space:nowrap;">Failed to fetch</span>
+  <span id="partsCount" style="font-size:11px;color:#555;white-space:nowrap;display:none;"><span id="partCountNum">0</span> parts loaded ✓</span>
+</div>
+
+<!-- Header fields -->
+<div class="controls">
+  <div class="ctrl"><span class="ctrl-label">Repair Order #</span><input type="text" id="f-ro" placeholder="RO-00000" style="width:120px" oninput="updateHeader()"></div>
+  <div class="ctrl"><span class="ctrl-label">Date</span><input type="date" id="f-date" style="width:150px" oninput="updateHeader()"></div>
+  <div class="ctrl"><span class="ctrl-label">Technician</span><input type="text" id="f-tech" placeholder="Full name" style="width:160px" oninput="updateHeader()"></div>
+  <div class="ctrl"><span class="ctrl-label">Year</span><input type="text" id="f-year" placeholder="20XX" style="width:64px" maxlength="4" oninput="updateHeader()"></div>
+  <div class="ctrl"><span class="ctrl-label">Make</span>
+    <select id="f-make" style="width:130px" onchange="updateHeader()">
+      <option value="">— Select —</option>
+      <option>Chrysler</option><option>Dodge</option><option>Jeep</option><option>Ram</option>
+      <option>Ford</option><option>Lincoln</option><option>Buick</option><option>Cadillac</option>
+      <option>Chevrolet</option><option>GMC</option><option>Acura</option><option>Honda</option>
+      <option>Hyundai</option><option>Kia</option><option>Infiniti</option><option>Nissan</option>
+      <option>Lexus</option><option>Toyota</option><option>Other</option>
+    </select>
+  </div>
+  <div class="ctrl"><span class="ctrl-label">Model</span><input type="text" id="f-model" placeholder="Model" style="width:130px" oninput="updateHeader()"></div>
+</div>
+
+<!-- Add bar -->
+<div class="add-bar">
+  <div class="ctrl">
+    <span class="ctrl-label">Search &amp; add part</span>
+    <div class="search-wrap">
+      <input type="text" id="partSearch" placeholder="Part # or description…" autocomplete="off" oninput="onSearch(event)" onkeydown="onKey(event)" disabled="">
+      <div class="dropdown" id="dropdown" style="display:none"></div>
+    </div>
+  </div>
+  <div class="ctrl"><span class="ctrl-label">Qty</span><input type="number" id="qtyAdd" value="1" min="1" max="999"></div>
+  <button class="btn btn-primary" onclick="addPart()" style="margin-bottom:0" id="addBtn" disabled="">+ Add Part</button>
+  <span class="add-hint">or press Enter</span>
+</div>
+
+<!-- Slip -->
+<div class="page-wrap">
+<div class="slip">
+  <div class="slip-head">
+    <div class="slip-logo">K</div>
+    <div>
+      <div class="slip-brand">Kent Automotive</div>
+      <div class="slip-brand-sub">Body Hardware Division</div>
+    </div>
+    <div class="slip-title-block">
+      <div class="slip-title">Parts Order Slip</div>
+      <div class="slip-ref" id="slip-ref">RO # —  ·  Date: 05/23/2026</div>
+    </div>
+  </div>
+  <div class="orange-bar"></div>
+  <div class="info-grid">
+    <div class="info-cell"><div class="info-label">Repair Order #</div><div class="info-value" id="d-ro">——————</div></div>
+    <div class="info-cell"><div class="info-label">Date</div><div class="info-value" id="d-date">05/23/2026</div></div>
+    <div class="info-cell"><div class="info-label">Technician</div><div class="info-value" id="d-tech">——————</div></div>
+  </div>
+  <div class="vehicle-grid">
+    <div class="info-cell"><div class="info-label">Vehicle (Year / Make / Model)</div><div class="info-value" id="d-vehicle">—— / —— / ——</div></div>
+    <div class="info-cell"><div class="info-label">Status</div><div style="font-family:var(--display);font-size:11px;font-weight:700;letter-spacing:.05em;padding-top:6px">☐ OPEN &nbsp; ☐ FILLED &nbsp; ☐ PARTIAL</div></div>
+  </div>
+  <table class="parts-table">
+    <thead>
+      <tr>
+        <th class="c" style="width:28px">#</th>
+        <th style="width:120px">Part Number</th>
+        <th>Description</th>
+        <th class="c" style="width:70px">Make</th>
+        <th class="c" style="width:56px">Qty</th>
+        <th class="r" style="width:82px">Unit Price</th>
+        <th class="r" style="width:82px">Ext Price</th>
+        <th class="c no-print" style="width:32px"></th>
+      </tr>
+    </thead>
+    <tbody id="parts-body"><tr style="background:#ffffff;height:30px">
+      <td><div class="td-inner row-num" style="color:#ddd">1</div></td>
+      <td><div class="td-inner"><span class="empty-dash" style="width:90px">&nbsp;</span></div></td>
+      <td><div class="td-inner"><span class="empty-dash" style="width:240px">&nbsp;</span></div></td>
+      <td></td>
+      <td><div class="td-inner" style="text-align:center">
+        <div style="width:46px;height:22px;border:1px dashed #e2e2de;border-radius:3px;margin:0 auto"></div>
+      </div></td>
+      <td></td><td></td><td class="no-print"></td>
+    </tr><tr style="background:#f8f8f5;height:30px">
+      <td><div class="td-inner row-num" style="color:#ddd">2</div></td>
+      <td><div class="td-inner"><span class="empty-dash" style="width:90px">&nbsp;</span></div></td>
+      <td><div class="td-inner"><span class="empty-dash" style="width:240px">&nbsp;</span></div></td>
+      <td></td>
+      <td><div class="td-inner" style="text-align:center">
+        <div style="width:46px;height:22px;border:1px dashed #e2e2de;border-radius:3px;margin:0 auto"></div>
+      </div></td>
+      <td></td><td></td><td class="no-print"></td>
+    </tr><tr style="background:#ffffff;height:30px">
+      <td><div class="td-inner row-num" style="color:#ddd">3</div></td>
+      <td><div class="td-inner"><span class="empty-dash" style="width:90px">&nbsp;</span></div></td>
+      <td><div class="td-inner"><span class="empty-dash" style="width:240px">&nbsp;</span></div></td>
+      <td></td>
+      <td><div class="td-inner" style="text-align:center">
+        <div style="width:46px;height:22px;border:1px dashed #e2e2de;border-radius:3px;margin:0 auto"></div>
+      </div></td>
+      <td></td><td></td><td class="no-print"></td>
+    </tr><tr style="background:#f8f8f5;height:30px">
+      <td><div class="td-inner row-num" style="color:#ddd">4</div></td>
+      <td><div class="td-inner"><span class="empty-dash" style="width:90px">&nbsp;</span></div></td>
+      <td><div class="td-inner"><span class="empty-dash" style="width:240px">&nbsp;</span></div></td>
+      <td></td>
+      <td><div class="td-inner" style="text-align:center">
+        <div style="width:46px;height:22px;border:1px dashed #e2e2de;border-radius:3px;margin:0 auto"></div>
+      </div></td>
+      <td></td><td></td><td class="no-print"></td>
+    </tr><tr style="background:#ffffff;height:30px">
+      <td><div class="td-inner row-num" style="color:#ddd">5</div></td>
+      <td><div class="td-inner"><span class="empty-dash" style="width:90px">&nbsp;</span></div></td>
+      <td><div class="td-inner"><span class="empty-dash" style="width:240px">&nbsp;</span></div></td>
+      <td></td>
+      <td><div class="td-inner" style="text-align:center">
+        <div style="width:46px;height:22px;border:1px dashed #e2e2de;border-radius:3px;margin:0 auto"></div>
+      </div></td>
+      <td></td><td></td><td class="no-print"></td>
+    </tr><tr style="background:#f8f8f5;height:30px">
+      <td><div class="td-inner row-num" style="color:#ddd">6</div></td>
+      <td><div class="td-inner"><span class="empty-dash" style="width:90px">&nbsp;</span></div></td>
+      <td><div class="td-inner"><span class="empty-dash" style="width:240px">&nbsp;</span></div></td>
+      <td></td>
+      <td><div class="td-inner" style="text-align:center">
+        <div style="width:46px;height:22px;border:1px dashed #e2e2de;border-radius:3px;margin:0 auto"></div>
+      </div></td>
+      <td></td><td></td><td class="no-print"></td>
+    </tr><tr style="background:#ffffff;height:30px">
+      <td><div class="td-inner row-num" style="color:#ddd">7</div></td>
+      <td><div class="td-inner"><span class="empty-dash" style="width:90px">&nbsp;</span></div></td>
+      <td><div class="td-inner"><span class="empty-dash" style="width:240px">&nbsp;</span></div></td>
+      <td></td>
+      <td><div class="td-inner" style="text-align:center">
+        <div style="width:46px;height:22px;border:1px dashed #e2e2de;border-radius:3px;margin:0 auto"></div>
+      </div></td>
+      <td></td><td></td><td class="no-print"></td>
+    </tr><tr style="background:#f8f8f5;height:30px">
+      <td><div class="td-inner row-num" style="color:#ddd">8</div></td>
+      <td><div class="td-inner"><span class="empty-dash" style="width:90px">&nbsp;</span></div></td>
+      <td><div class="td-inner"><span class="empty-dash" style="width:240px">&nbsp;</span></div></td>
+      <td></td>
+      <td><div class="td-inner" style="text-align:center">
+        <div style="width:46px;height:22px;border:1px dashed #e2e2de;border-radius:3px;margin:0 auto"></div>
+      </div></td>
+      <td></td><td></td><td class="no-print"></td>
+    </tr><tr style="background:#ffffff;height:30px">
+      <td><div class="td-inner row-num" style="color:#ddd">9</div></td>
+      <td><div class="td-inner"><span class="empty-dash" style="width:90px">&nbsp;</span></div></td>
+      <td><div class="td-inner"><span class="empty-dash" style="width:240px">&nbsp;</span></div></td>
+      <td></td>
+      <td><div class="td-inner" style="text-align:center">
+        <div style="width:46px;height:22px;border:1px dashed #e2e2de;border-radius:3px;margin:0 auto"></div>
+      </div></td>
+      <td></td><td></td><td class="no-print"></td>
+    </tr><tr style="background:#f8f8f5;height:30px">
+      <td><div class="td-inner row-num" style="color:#ddd">10</div></td>
+      <td><div class="td-inner"><span class="empty-dash" style="width:90px">&nbsp;</span></div></td>
+      <td><div class="td-inner"><span class="empty-dash" style="width:240px">&nbsp;</span></div></td>
+      <td></td>
+      <td><div class="td-inner" style="text-align:center">
+        <div style="width:46px;height:22px;border:1px dashed #e2e2de;border-radius:3px;margin:0 auto"></div>
+      </div></td>
+      <td></td><td></td><td class="no-print"></td>
+    </tr></tbody>
+    <tfoot>
+      <tr class="total-row">
+        <td colspan="6" class="total-label">Total Parts Cost</td>
+        <td class="total-amount" id="total-cell">$0.00</td>
+        <td class="no-print" style="background:#f4f4f1;border-top:2px solid #111"></td>
+      </tr>
+    </tfoot>
+  </table>
+  <div class="sig-section">
+    <div class="sig-cell"><div class="sig-label">Technician Signature</div><div class="sig-line"></div><div class="sig-sub">Signature</div></div>
+    <div class="sig-cell"><div class="sig-label">Date Completed</div><div class="sig-line"></div><div class="sig-sub">Date</div></div>
+  </div>
+  <div class="slip-foot">
+    <span class="foot-l">Kent Automotive · Body Hardware · E3040K Series</span>
+    <span class="foot-r" id="foot-date">Printed: May 22, 2026</span>
+  </div>
+</div>
+</div>
+
+<!-- Instructions modal -->
+<div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;overflow:auto">
+  <div style="background:#1a1a1a;max-width:620px;margin:60px auto;border-radius:10px;border:1px solid #333;padding:32px;color:#ccc;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <h2 style="font-family:var(--display);font-size:18px;color:white">Setting up your Google Sheet</h2>
+      <button onclick="document.getElementById(&#39;modal&#39;).style.display=&#39;none&#39;" style="background:none;border:none;color:#666;font-size:22px;cursor:pointer;line-height:1">×</button>
+    </div>
+    <ol style="font-size:13px;line-height:2;padding-left:18px;color:#aaa;">
+      <li>Go to <a href="https://sheets.google.com/" target="_blank" style="color:var(--orange)">sheets.google.com</a> and create a new spreadsheet</li>
+      <li>Name it <strong style="color:white">Kent Parts Catalog</strong></li>
+      <li>Set up the first row as headers in this exact order:<br>
+        <code style="background:#111;padding:4px 8px;border-radius:3px;font-size:12px;color:#f97316;display:inline-block;margin-top:4px">Part Number &nbsp;|&nbsp; Description &nbsp;|&nbsp; Make &nbsp;|&nbsp; Cost</code>
+      </li>
+      <li>Add your parts data — one part per row. <strong style="color:white">Cost = the raw cost</strong> (the form applies 50% markup automatically)</li>
+      <li>Click <strong style="color:white">File → Share → Publish to web</strong></li>
+      <li>Under "Link", select the sheet tab and choose <strong style="color:white">Comma-separated values (.csv)</strong></li>
+      <li>Click <strong style="color:white">Publish</strong> and copy the URL</li>
+      <li>Paste that URL into the sheet URL field above and click <strong style="color:white">Load Sheet</strong></li>
+    </ol>
+    <div style="margin-top:20px;padding:14px;background:#111;border-radius:6px;border-left:3px solid var(--orange)">
+      <p style="font-size:12px;color:#888;margin-bottom:6px">Example CSV URL format:</p>
+      <code style="font-size:11px;color:#f97316;word-break:break-all">https://docs.google.com/spreadsheets/d/1ABC...xyz/pub?output=csv</code>
+    </div>
+    <div style="margin-top:16px;padding:14px;background:#111;border-radius:6px">
+      <p style="font-size:12px;color:#888;margin-bottom:8px"><strong style="color:white">Example sheet data:</strong></p>
+      <table style="font-size:11px;color:#aaa;border-collapse:collapse;width:100%">
+        <tbody><tr style="color:#666;border-bottom:1px solid #222"><td style="padding:3px 8px">Part Number</td><td style="padding:3px 8px">Description</td><td style="padding:3px 8px">Make</td><td style="padding:3px 8px">Cost</td></tr>
+        <tr><td style="padding:3px 8px;color:#f97316">P85383</td><td style="padding:3px 8px">Tail Light Rtnr-Dodge</td><td style="padding:3px 8px">CDJR</td><td style="padding:3px 8px">0.51</td></tr>
+        <tr><td style="padding:3px 8px;color:#f97316">KT13447</td><td style="padding:3px 8px">Bumper Coverretainer</td><td style="padding:3px 8px">CDJR</td><td style="padding:3px 8px">0.72</td></tr>
+        <tr><td style="padding:3px 8px;color:#f97316">1231557</td><td style="padding:3px 8px">Bumper Drive-Type Rivet</td><td style="padding:3px 8px">CDJR</td><td style="padding:3px 8px">0.57</td></tr>
+      </tbody></table>
+    </div>
+    <p style="font-size:12px;color:#555;margin-top:16px">💡 Tip: Once set up, just add rows to your sheet anytime. Everyone using the form will see new parts the next time they click <strong style="color:#888">↺ Reload</strong> or open the page.</p>
+    <button onclick="document.getElementById(&#39;modal&#39;).style.display=&#39;none&#39;" style="margin-top:20px;background:var(--orange);border:none;color:white;padding:10px 24px;border-radius:5px;font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.07em;text-transform:uppercase;cursor:pointer">Got it</button>
+  </div>
+</div>
+
+<script>
+// ── Make colors ───────────────────────────────────────────────────────────────
+const MC={CDJR:{bg:"#ede9fe",color:"#5b21b6"},Ford:{bg:"#dbeafe",color:"#1e40af"},GM:{bg:"#dcfce7",color:"#166534"},Honda:{bg:"#fee2e2",color:"#991b1b"},Hyundai:{bg:"#e0e7ff",color:"#3730a3"},Nissan:{bg:"#fef9c3",color:"#854d0e"},Toyota:{bg:"#ffe4e6",color:"#9f1239"}};
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let PARTS = {};        // {partNum: {desc, cost, make, price}}
+let slipParts = [];
+let suggs = [], sugIdx = -1;
+const MIN = 10;
+
+// ── Utility ───────────────────────────────────────────────────────────────────
+function mu(c){ return Math.round(c * 1.5 * 100) / 100; }
+function fmt(n){ return '$' + Number(n).toFixed(2); }
+
+function lookup(q) {
+  const k = q.trim().toUpperCase();
+  for (const [num, v] of Object.entries(PARTS))
+    if (num.toUpperCase() === k) return {...v, num};
+  return null;
+}
+
+function search(q) {
+  if (q.length < 2) return [];
+  const ql = q.toLowerCase();
+  return Object.entries(PARTS)
+    .filter(([n, v]) => n.toLowerCase().includes(ql) || v.desc.toLowerCase().includes(ql))
+    .slice(0, 14)
+    .map(([n, v]) => ({...v, num: n}));
+}
+
+// ── Google Sheet loading ──────────────────────────────────────────────────────
+const SHEET_KEY = 'kent_sheet_url';
+
+function setStatus(state, text) {
+  const dot = document.getElementById('statusDot');
+  const txt = document.getElementById('statusText');
+  dot.className = 'status-dot ' + state;
+  if (txt) txt.textContent = text;
+}
+
+function setLoadBar(pct) {
+  document.getElementById('loadBar').style.width = pct + '%';
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  if (lines.length < 2) return {};
+  const parts = {};
+  // Skip header row (row 0), parse from row 1
+  for (let i = 1; i < lines.length; i++) {
+    // Handle quoted CSV values
+    const cols = lines[i].match(/(".*?"|[^,]+)(?=,|$)/g) || lines[i].split(',');
+    const clean = cols.map(c => c.replace(/^"|"$/g, '').trim());
+    const num  = clean[0];
+    const desc = clean[1];
+    const make = clean[2];
+    const cost = parseFloat(clean[3]);
+    if (num && desc && !isNaN(cost)) {
+      parts[num] = { desc, make: make || '', cost, price: mu(cost) };
+    }
+  }
+  return parts;
+}
+
+async function loadFromSheet(url) {
+  setStatus('loading', 'Loading parts…');
+  setLoadBar(20);
+  document.getElementById('partSearch').disabled = true;
+  document.getElementById('addBtn').disabled = true;
+
+  try {
+    // Use a CORS proxy since Google Sheets CSV requires it from local files
+    // Try direct first, fall back to allorigins proxy
+    let response;
+    let csvText;
+
+    setLoadBar(40);
+    try {
+      response = await fetch(url, { cache: 'no-store' });
+      if (!response.ok) throw new Error('Direct fetch failed');
+      csvText = await response.text();
+    } catch(e) {
+      // Use allorigins CORS proxy
+      const proxy = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+      setLoadBar(55);
+      response = await fetch(proxy);
+      if (!response.ok) throw new Error('Proxy fetch failed');
+      const json = await response.json();
+      csvText = json.contents;
+    }
+
+    setLoadBar(80);
+    const parsed = parseCSV(csvText);
+    const count = Object.keys(parsed).length;
+
+    if (count === 0) throw new Error('No parts found — check your sheet format');
+
+    PARTS = parsed;
+    setLoadBar(100);
+    setStatus('ok', '');
+    document.getElementById('statusText').textContent = '';
+    document.getElementById('partsCount').style.display = 'inline';
+    document.getElementById('partCountNum').textContent = count;
+    document.getElementById('partSearch').disabled = false;
+    document.getElementById('addBtn').disabled = false;
+    document.getElementById('partSearch').placeholder = 'Search ' + count + ' parts…';
+
+    setTimeout(() => setLoadBar(0), 800);
+  } catch(err) {
+    setLoadBar(0);
+    setStatus('err', 'Could not load sheet');
+    document.getElementById('statusText').textContent = err.message || 'Connection failed';
+    console.error(err);
+  }
+}
+
+function saveAndLoad() {
+  const url = document.getElementById('sheetUrl').value.trim();
+  if (!url) { alert('Please paste your Google Sheet CSV URL first.'); return; }
+  localStorage.setItem(SHEET_KEY, url);
+  loadFromSheet(url);
+}
+
+function reloadParts() {
+  const url = localStorage.getItem(SHEET_KEY) || document.getElementById('sheetUrl').value.trim();
+  if (!url) { showInstructions(); return; }
+  loadFromSheet(url);
+}
+
+function showInstructions() {
+  document.getElementById('modal').style.display = 'block';
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+const today = new Date();
+document.getElementById('f-date').value = today.toISOString().slice(0,10);
+document.getElementById('foot-date').textContent =
+  'Printed: ' + today.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+updateHeader();
+
+// Auto-load if URL already saved
+const savedUrl = localStorage.getItem(SHEET_KEY);
+if (savedUrl) {
+  document.getElementById('sheetUrl').value = savedUrl;
+  loadFromSheet(savedUrl);
+} else {
+  setStatus('err', '');
+  document.getElementById('statusText').textContent = 'Paste your CSV URL above and click Load Sheet';
+  setLoadBar(0);
+}
+
+// ── Header display ────────────────────────────────────────────────────────────
+function fmtDate(v) {
+  const d = new Date(v + 'T00:00:00');
+  return isNaN(d) ? v : d.toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'numeric'});
+}
+
+function updateHeader() {
+  const ro    = document.getElementById('f-ro').value.trim();
+  const date  = fmtDate(document.getElementById('f-date').value);
+  const tech  = document.getElementById('f-tech').value.trim();
+  const year  = document.getElementById('f-year').value.trim();
+  const make  = document.getElementById('f-make').value;
+  const model = document.getElementById('f-model').value.trim();
+  document.getElementById('d-ro').textContent    = ro   || '——————';
+  document.getElementById('d-date').textContent  = date || '——————';
+  document.getElementById('d-tech').textContent  = tech || '——————';
+  const veh = [year, make, model].filter(Boolean).join(' ');
+  document.getElementById('d-vehicle').textContent = veh || '—— / —— / ——';
+  document.getElementById('slip-ref').textContent =
+    'RO # ' + (ro||'—') + '  ·  Date: ' + (date||'—');
+}
+
+// ── Render slip ───────────────────────────────────────────────────────────────
+function render() {
+  const tbody = document.getElementById('parts-body');
+  let html = '';
+  slipParts.forEach((p, i) => {
+    const mc  = MC[p.make] || {bg:'#f5f5f5',color:'#555'};
+    const bg  = i % 2 === 0 ? '#ffffff' : '#f8f8f5';
+    html += `<tr style="background:${bg}">
+      <td><div class="td-inner row-num">${i+1}</div></td>
+      <td><div class="td-inner part-num-cell">${p.num}</div></td>
+      <td><div class="td-inner desc-cell">${p.desc}</div></td>
+      <td><div class="td-inner" style="text-align:center">
+        <span class="make-badge" style="background:${mc.bg};color:${mc.color}">${p.make||'—'}</span>
+      </div></td>
+      <td><div class="td-inner" style="text-align:center">
+        <input class="qty-input" type="number" value="${p.qty}" min="1" max="999"
+          onchange="updateQty(${i},this.value)" oninput="updateQty(${i},this.value)">
+      </div></td>
+      <td><div class="td-inner unit-price-cell" id="up-${i}">${fmt(p.price)}</div></td>
+      <td><div class="td-inner ext-price-cell" id="ep-${i}">${fmt(p.price*p.qty)}</div></td>
+      <td class="no-print"><div class="td-inner" style="text-align:center">
+        <button class="remove-btn" onclick="removePart(${i})">×</button>
+      </div></td>
+    </tr>`;
+  });
+  for (let i = slipParts.length; i < MIN; i++) {
+    const bg = i % 2 === 0 ? '#ffffff' : '#f8f8f5';
+    html += `<tr style="background:${bg};height:30px">
+      <td><div class="td-inner row-num" style="color:#ddd">${i+1}</div></td>
+      <td><div class="td-inner"><span class="empty-dash" style="width:90px">&nbsp;</span></div></td>
+      <td><div class="td-inner"><span class="empty-dash" style="width:240px">&nbsp;</span></div></td>
+      <td></td>
+      <td><div class="td-inner" style="text-align:center">
+        <div style="width:46px;height:22px;border:1px dashed #e2e2de;border-radius:3px;margin:0 auto"></div>
+      </div></td>
+      <td></td><td></td><td class="no-print"></td>
+    </tr>`;
+  }
+  tbody.innerHTML = html;
+  recalcTotal();
+}
+
+function updateQty(idx, val) {
+  const q = Math.max(1, parseInt(val) || 1);
+  slipParts[idx].qty = q;
+  const ep = document.getElementById('ep-' + idx);
+  if (ep) ep.textContent = fmt(slipParts[idx].price * q);
+  recalcTotal();
+}
+
+function recalcTotal() {
+  const total = slipParts.reduce((s, p) => s + p.price * p.qty, 0);
+  document.getElementById('total-cell').textContent = fmt(total);
+}
+
+function removePart(idx) { slipParts.splice(idx, 1); render(); }
+
+// ── Search ────────────────────────────────────────────────────────────────────
+function onSearch(e) {
+  const q = e.target.value.trim();
+  const box = document.getElementById('dropdown');
+  if (q.length < 2) { box.style.display = 'none'; suggs = []; return; }
+  suggs = search(q); sugIdx = -1;
+  if (!suggs.length) { box.style.display = 'none'; return; }
+  box.innerHTML = suggs.map((p, i) =>
+    `<div class="drop-item" onclick="pickSug(${i})">
+      <span class="di-num">${p.num}</span>
+      <span class="di-desc">${p.desc}</span>
+      <span class="di-price">${fmt(p.price)}</span>
+      <span class="di-make">${p.make||''}</span>
+    </div>`).join('');
+  box.style.display = 'block';
+}
+
+function pickSug(i) {
+  const p = suggs[i]; if (!p) return;
+  document.getElementById('partSearch').value = p.num;
+  document.getElementById('dropdown').style.display = 'none';
+  sugIdx = i; addPart();
+}
+
+function onKey(e) {
+  if (e.key === 'ArrowDown') { e.preventDefault(); sugIdx = Math.min(sugIdx+1, suggs.length-1); hiSug(); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); sugIdx = Math.max(sugIdx-1, -1); hiSug(); }
+  else if (e.key === 'Enter')  { e.preventDefault(); sugIdx >= 0 ? pickSug(sugIdx) : addPart(); }
+  else if (e.key === 'Escape') { document.getElementById('dropdown').style.display = 'none'; }
+}
+function hiSug() {
+  document.querySelectorAll('.drop-item').forEach((el, i) => el.classList.toggle('active', i === sugIdx));
+}
+
+function addPart() {
+  const inp = document.getElementById('partSearch').value.trim();
+  const qty = Math.max(1, parseInt(document.getElementById('qtyAdd').value) || 1);
+  if (!inp) return;
+  const p = lookup(inp) || (sugIdx >= 0 ? suggs[sugIdx] : suggs[0]);
+  if (!p) { alert(`"${inp}" not found. Check part number or reload the sheet.`); return; }
+  slipParts.push({...p, qty});
+  document.getElementById('partSearch').value = '';
+  document.getElementById('qtyAdd').value = '1';
+  document.getElementById('dropdown').style.display = 'none';
+  suggs = []; sugIdx = -1;
+  render();
+  document.getElementById('partSearch').focus();
+}
+
+function clearAll() {
+  if (slipParts.length && !confirm('Clear all parts from the slip?')) return;
+  slipParts = []; render();
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-wrap'))
+    document.getElementById('dropdown').style.display = 'none';
+});
+
+render();
+</script>
+
+
+</body></html>
